@@ -1,4 +1,4 @@
-"""Read and write private credentials for the UHY scripts."""
+"""Read and write private credentials for the accounting workflow."""
 import json
 from pathlib import Path
 from tempfile import NamedTemporaryFile

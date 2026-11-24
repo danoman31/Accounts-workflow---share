@@ -10,7 +10,7 @@ from report_filing import CLIENT_FOLDER
 from working_papers_link import latest_working_papers, require_closed_workbook
 
 
-PROFILE = Path.home() / 'Library' / 'Application Support' / 'UHY Xero Reports' / 'Chrome'
+PROFILE = Path.home() / 'Library' / 'Application Support' / 'Accounting Workflow Xero Reports' / 'Chrome'
 
 
 def open_xero(playwright):

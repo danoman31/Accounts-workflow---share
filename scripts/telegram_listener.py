@@ -1,4 +1,4 @@
-"""Accept paired Telegram commands for the UHY Demo Company export."""
+"""Accept paired Telegram commands for the Xero Demo Company export."""
 import argparse
 from datetime import date, datetime
 from getpass import getpass

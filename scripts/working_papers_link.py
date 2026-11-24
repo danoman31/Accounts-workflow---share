@@ -35,22 +35,23 @@ STATUTORY_LINKS = {
 DOCUMENT_LINKS = {
     'A1': ('A', 'H9', 'Accounts for signature checklist'),
     'A13, A14': ('A', 'H15', 'Directors Minutes & AGM Minutes'),
-    'A21, A21-1': ('A', 'H19', 'UHY Non Audit Accountancy Programme - Completion'),
+    'A21, A21-1': ('A', 'H19', 'Non Audit Accountancy Programme - Completion'),
     'A25-1': ('A', 'H23', 'Quality Control Checklist'),
     'A27': ('A', 'H25', 'Opening Balance Adjustments'),
     'A27-1': ('A', 'H26', "VAT - over's & under's form"),
     'A32': ('A', 'H28', 'Disclosure Checklist'),
-    'B10': ('B', 'H9', 'UHY Non Audit Accountancy Programme - Planning'),
+    'B10': ('B', 'H9', 'Non Audit Accountancy Programme - Planning'),
     'B21': ('B', 'H12', 'Booking in Sheet'),
     'B61-1': ('B', 'H14', 'Budget'),
-    'B70': ('B', 'H15', 'UHY Non Audited Accounts Preparation - Risk Assessment'),
-    'C1': ('C', 'H10', 'Tax Lead Schedule - UHY Template'),
+    'B70': ('B', 'H15', 'Non Audited Accounts Preparation - Risk Assessment'),
+    'C1': ('C', 'H10', 'Tax Lead Schedule'),
     'C7': ('C', 'H16', 'Tax Compliance Checklist'),
     'R1': ('R', 'H9', 'Anti Money Laundering Annual Monitoring Review'),
-    'R2': ('R', 'H10', 'UHY Client Information Record'),
+    'R2': ('R', 'H10', 'Client Information Record'),
     'R2-1': ('R', 'H11', 'ID Verification Form'),
 }
 WORKING_PAPER_LINKS = {**REPORT_LINKS, **STATUTORY_LINKS, **DOCUMENT_LINKS}
+
 
 def latest_working_papers(folder):
     version_pattern = re.compile(r'(?<![A-Za-z0-9])v([0-9]+)(?![A-Za-z0-9])', re.I)
@@ -149,7 +150,15 @@ def report_sheet(source, code):
                 value = strings[int(value)]
             elif cell.get('t') == 'inlineStr':
                 value = ''.join(text.text or '' for text in cell.findall('.//{*}t'))
-        if value is None or value.strip().casefold() != expected.casefold():
+        actual = (value or '').strip().casefold()
+        normalized = expected.casefold()
+        if ref == f'{description_column}{row}' and actual != normalized:
+            # Existing templates can include a firm name in these descriptions.
+            if code in ('A21, A21-1', 'B10', 'B70', 'R2'):
+                actual = actual.split(' ', 1)[-1]
+            elif code == 'C1' and re.fullmatch(r'tax lead schedule - (?:\S+ )?template', actual):
+                actual = normalized
+        if actual != normalized:
             raise ValueError(f'Could not verify the working-papers entry at {tab}!{ref}.')
     return sheet_path, raw, root
 
